@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CommunityConnect — Web-Based Community Information System
 
-## Getting Started
+Modern Next.js (App Router) prototype implementing the PRD with auth, RBAC, and core modules: Announcements, Complaints, Service Schedules, Events, and a lightweight Admin dashboard. MongoDB is accessed via Mongoose. Authentication is via NextAuth (credentials provider).
 
-First, run the development server:
+## 1) Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18+
+- A MongoDB connection string
+
+## 2) Environment
+
+Create a `.env.local` file in the project root:
+
+```env
+MONGODB_URI="your-mongodb-connection-string"
+NEXTAUTH_SECRET="a-strong-random-string"
+NEXTAUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Tip: Generate NEXTAUTH_SECRET with `node -e "console.log(crypto.randomBytes(32).toString('hex'))"`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 3) Install and run
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Visit <http://localhost:3000>.
 
-To learn more about Next.js, take a look at the following resources:
+## 4) Modules overview
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Auth: /login, /register, password reset prototype under /reset-password/request
+- Announcements: /announcements (list), /announcements/new (admin)
+- Complaints: /complaints (list), /complaints/new (resident)
+- Service Schedules: /schedules (list), /schedules/new (admin)
+- Events: /events (list + register), /events/new (admin)
+- Admin dashboard: /admin
+- Notifications: /notifications
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Admin-only routes are protected by middleware. To create an admin user, register normally then update the user’s role to `admin` directly in your database, or modify the register API to allow admin creation during initial setup.
 
-## Deploy on Vercel
+## 5) Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- This is a prototype: email/SMS is out of scope; password reset returns a link directly.
+- RBAC is enforced both client-side (UI) and server-side (API + middleware).
+- Models live in `models/`, DB helper in `lib/db.ts`.
