@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-// @ts-expect-error: allow side-effect CSS import in TS
 import "./globals.css";
 import Providers from "./providers";
 import Navbar from "@/components/Navbar";
