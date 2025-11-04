@@ -58,7 +58,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              className={`mt-1 cc-input ${error ? "cc-input--error" : ""}`}
             />
           </div>
           <div>
@@ -68,7 +68,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900"
+              className={`mt-1 cc-input ${error ? "cc-input--error" : ""}`}
             />
           </div>
         </div>

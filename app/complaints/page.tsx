@@ -3,6 +3,8 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { connectDB } from "@/lib/db";
 import { Complaint } from "@/models/Complaint";
 import Link from "next/link";
+import ComplaintReplyForm from "@/components/ComplaintReplyForm";
+import Badge from "@/components/ui/Badge";
 
 export default async function ComplaintsPage() {
   const session = await getServerSession(authOptions);
@@ -33,6 +35,19 @@ export default async function ComplaintsPage() {
     status: c.status as string,
     category: c.category as string,
     location: c.location as string | undefined,
+    replies: Array.isArray((c as Record<string, unknown>).replies as unknown)
+      ? (
+          (c as Record<string, unknown>).replies as Array<
+            Record<string, unknown>
+          >
+        ).map((r) => ({
+          message: (r.message as string) || "",
+          authorRole: ((r.authorRole as string) || "admin") as string,
+          createdAt: new Date(
+            (r.createdAt as string | number | Date) ?? Date.now()
+          ),
+        }))
+      : [],
   }));
 
   return (
@@ -62,15 +77,42 @@ export default async function ComplaintsPage() {
             <li key={String(c._id)} className="rounded-lg border p-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">{c.title}</h3>
-                <span className="rounded bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700">
+                <Badge
+                  variant={
+                    c.status === "Resolved"
+                      ? "green"
+                      : c.status === "In Progress"
+                      ? "orange"
+                      : "blue"
+                  }
+                >
                   {c.status}
-                </span>
+                </Badge>
               </div>
               <p className="mt-2 text-sm text-zinc-700">{c.description}</p>
               <div className="mt-2 text-xs text-zinc-500">
                 {c.category}
                 {c.location ? ` · ${c.location}` : ""}
               </div>
+              {/* Replies */}
+              {complaints.find((x) => x._id === c._id)?.replies?.length ? (
+                <ul className="mt-3 space-y-2 border-t pt-3">
+                  {complaints
+                    .find((x) => x._id === c._id)!
+                    .replies!.map((r, idx) => (
+                      <li key={idx} className="text-sm">
+                        <span className="font-medium">Admin reply:</span>{" "}
+                        <span className="text-zinc-700">{r.message}</span>
+                        <span className="ml-2 text-xs text-zinc-500">
+                          {r.createdAt.toLocaleString()}
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              ) : null}
+
+              {/* Admin reply form */}
+              {isAdmin && <ComplaintReplyForm id={String(c._id)} />}
             </li>
           ))}
         </ul>

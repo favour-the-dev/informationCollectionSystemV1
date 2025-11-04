@@ -1,8 +1,11 @@
 import { connectDB } from "@/lib/db";
 import { ServiceSchedule } from "@/models/ServiceSchedule";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function SchedulesPage() {
+  const session = await getServerSession(authOptions);
   await connectDB();
   const now = new Date();
   const raw = await ServiceSchedule.find({ date: { $gte: now } })
@@ -21,12 +24,11 @@ export default async function SchedulesPage() {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Service Schedules</h1>
-        <Link
-          href="/schedules/new"
-          className="rounded-md bg-black px-3 py-1.5 text-white hover:bg-zinc-800"
-        >
-          New
-        </Link>
+        {session?.user?.role === "admin" && (
+          <Link href="/schedules/new" className="cc-btn cc-btn--primary">
+            New
+          </Link>
+        )}
       </div>
       {items.length === 0 ? (
         <div className="rounded-lg border p-8 text-center text-zinc-600">
