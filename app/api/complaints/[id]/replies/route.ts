@@ -8,13 +8,14 @@ import mongoose from "mongoose";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user || session.user.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const rawId = params.id ?? "";
+  const { id: idRaw } = await params;
+  const rawId = idRaw ?? "";
   // Normalize id: handle URL encoding and potential ObjectId("...") wrappers
   const decoded = decodeURIComponent(rawId);
   const m = decoded.match(/^ObjectId\("([0-9a-fA-F]{24})"\)$/);
@@ -57,10 +58,11 @@ export async function POST(
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await connectDB();
-  const rawId = params.id ?? "";
+  const { id: idRaw } = await params;
+  const rawId = idRaw ?? "";
   const decoded = decodeURIComponent(rawId);
   const m = decoded.match(/^ObjectId\("([0-9a-fA-F]{24})"\)$/);
   const id = m ? m[1] : decoded.trim();
