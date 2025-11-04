@@ -54,6 +54,14 @@ export default function Navbar() {
           </Link>
         </div>
         <nav className="hidden items-center gap-3 text-sm sm:flex">
+          {session?.user && (
+            <Link
+              href="/dashboard"
+              className="text-(--cc-text-muted) hover:text-(--cc-text)"
+            >
+              Dashboard
+            </Link>
+          )}
           <Link
             href="/announcements"
             className="text-(--cc-text-muted) hover:text-(--cc-text)"
@@ -158,6 +166,15 @@ export default function Navbar() {
                 </button>
               </div>
               <nav className="flex flex-col gap-1 p-3 text-sm">
+                {session?.user && (
+                  <Link
+                    href="/dashboard"
+                    className="rounded px-2 py-2 hover:bg-zinc-50"
+                    onClick={() => setOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 <Link
                   href="/announcements"
                   className="rounded px-2 py-2 hover:bg-zinc-50"
